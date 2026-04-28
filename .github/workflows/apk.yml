@@ -1,0 +1,70 @@
+name: Build Android APK (TWA)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Generate app icon (512)
+        run: node scripts/make-icon.mjs
+
+      - name: Install Bubblewrap CLI
+        run: npm i -g @bubblewrap/cli
+
+      - name: Create signing keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore android.keystore \
+            -storepass password \
+            -alias android \
+            -keypass password \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=StudyViz, OU=StudyViz, O=StudyViz, L=CN, S=CN, C=CN"
+
+      - name: Init TWA project
+        run: |
+          bubblewrap init --overwrite \
+            --manifest https://470111.github.io/study-viz/manifest.webmanifest \
+            --directory twa \
+            --packageId io.github._470111.studyviz \
+            --name StudyViz \
+            --launcherName StudyViz \
+            --iconUrl https://470111.github.io/study-viz/icon-512.png \
+            --signingKeyPath android.keystore \
+            --signingKeyAlias android \
+            --signingKeyPassword password \
+            --signingKeyStorePassword password
+
+      - name: Build signed APK
+        run: |
+          cd twa
+          bubblewrap build
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: study-viz-apk
+          path: |
+            twa/*.apk
+            twa/app/build/outputs/**/*.apk
+

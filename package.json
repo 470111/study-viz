@@ -21,6 +21,7 @@
     "@vitejs/plugin-vue": "^6.0.6",
     "@vue/tsconfig": "^0.9.1",
     "@rollup/wasm-node": "^4.60.2",
+    "sharp": "^0.34.3",
     "typescript": "~6.0.2",
     "vite": "^7.0.0",
     "vite-plugin-pwa": "^1.2.0",
