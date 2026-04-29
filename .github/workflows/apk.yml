@@ -62,8 +62,12 @@ jobs:
         run: mkdir -p twa
 
       - name: Init TWA project
+        shell: bash
         run: |
-          bubblewrap init --overwrite \
+          export BUBBLEWRAP_KEYSTORE_PASSWORD=password
+          export BUBBLEWRAP_KEY_PASSWORD=password
+
+          yes '' | bubblewrap init --overwrite \
             --manifest https://470111.github.io/study-viz/manifest.webmanifest \
             --directory twa \
             --packageId io.github._470111.studyviz \
