@@ -25,6 +25,10 @@ jobs:
       - name: Install deps
         run: npm ci
 
+      # Needed by scripts/gen-twa-project.mjs; keep even if package-lock on GitHub omits it.
+      - name: Install @bubblewrap/core (TWA generator)
+        run: npm install @bubblewrap/core@1.24.1 --no-save --no-audit --no-fund
+
       - name: Generate app icon (512)
         run: node scripts/make-icon.mjs
 
@@ -75,3 +79,4 @@ jobs:
           path: |
             twa/*.apk
             twa/app/build/outputs/**/*.apk
+
