@@ -47,39 +47,23 @@ jobs:
           echo "bubblewrap config:"
           cat "$HOME/.bubblewrap/config.json"
 
+      - name: Generate TWA Android project (no Bubblewrap prompts)
+        run: node scripts/gen-twa-project.mjs
+
       - name: Create signing keystore
         run: |
           keytool -genkeypair -v \
-            -keystore android.keystore \
+            -keystore twa/android.keystore \
             -storepass password \
             -alias android \
             -keypass password \
             -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=StudyViz, OU=StudyViz, O=StudyViz, L=CN, S=CN, C=CN"
 
-      - name: Prepare TWA directory
-        shell: bash
-        run: mkdir -p twa
-
-      - name: Init TWA project
-        shell: bash
-        run: |
-          export BUBBLEWRAP_KEYSTORE_PASSWORD=password
-          export BUBBLEWRAP_KEY_PASSWORD=password
-
-          yes '' | bubblewrap init --overwrite \
-            --manifest https://470111.github.io/study-viz/manifest.webmanifest \
-            --directory twa \
-            --packageId io.github._470111.studyviz \
-            --name StudyViz \
-            --launcherName StudyViz \
-            --iconUrl https://470111.github.io/study-viz/icon-512.png \
-            --signingKeyPath android.keystore \
-            --signingKeyAlias android \
-            --signingKeyPassword password \
-            --signingKeyStorePassword password
-
       - name: Build signed APK
+        env:
+          BUBBLEWRAP_KEYSTORE_PASSWORD: password
+          BUBBLEWRAP_KEY_PASSWORD: password
         run: |
           cd twa
           bubblewrap build
@@ -91,4 +75,3 @@ jobs:
           path: |
             twa/*.apk
             twa/app/build/outputs/**/*.apk
-
