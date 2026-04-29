@@ -57,6 +57,10 @@ jobs:
             -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=StudyViz, OU=StudyViz, O=StudyViz, L=CN, S=CN, C=CN"
 
+      - name: Prepare TWA directory
+        shell: bash
+        run: mkdir -p twa
+
       - name: Init TWA project
         run: |
           bubblewrap init --overwrite \
