@@ -38,8 +38,8 @@ twa.generatorApp = 'bubblewrap';
 
 twa.launcherName = twa.launcherName.slice(0, 12);
 
-const origin = new URL(WEB_MANIFEST).origin;
-twa.iconUrl = `${origin}/icon-512.png`;
+// origin is only the host; GitHub Pages needs the path (e.g. /study-viz/icon-512.png).
+twa.iconUrl = new URL('icon-512.png', WEB_MANIFEST).href;
 
 twa.signingKey.path = join(TWADIR, 'android.keystore');
 
